@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Zirmon QC — Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="dot"></div>
+      <span>Zirmon Dental Atelier — <strong>QC Dashboard</strong></span>
+    </div>
+    <div class="actions-right">
+      <a class="chip" href="#" onclick="location.reload();return false;">Reload</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <p class="lead">Upload the two photos, mark <b>Tooth</b> and <b>Shade</b> on each, then analyze. Results and issues are shown below.</p>
+
+    <form id="qc-form" action="/analyze" method="post" enctype="multipart/form-data" class="card panel">
+      <div class="grid">
+        <div class="panel-inner">
+          <h3>Clinical Photo</h3>
+          <input type="file" name="clinical_image" id="clinical_input" accept="image/*" required />
+          <div class="tools">
+            <label class="radio"><input type="radio" name="tool_clinical" value="tooth" checked> Tooth ROI</label>
+            <label class="radio"><input type="radio" name="tool_clinical" value="shade"> Shade ROI</label>
+            <button type="button" class="chip subtle" onclick="clearROIs('clinical')">Clear</button>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="canvas_clinical" width="560" height="360"></canvas>
+          </div>
+        </div>
+
+        <div class="panel-inner">
+          <h3>Lab Photo</h3>
+          <input type="file" name="lab_image" id="lab_input" accept="image/*" required />
+          <div class="tools">
+            <label class="radio"><input type="radio" name="tool_lab" value="tooth" checked> Tooth ROI</label>
+            <label class="radio"><input type="radio" name="tool_lab" value="shade"> Shade ROI</label>
+            <button type="button" class="chip subtle" onclick="clearROIs('lab')">Clear</button>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="canvas_lab" width="560" height="360"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <input type="hidden" name="roi_json" id="roi_json" />
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit" onclick="return prepareROI()">Analyze</button>
+      </div>
+    </form>
+
+    {% if results %}
+    <section class="cards">
+      <div class="card">
+        <h4>ΔE (Color Differences)</h4>
+        <ul>
+          <li>Clinical Tooth ↔ Shade: <b>{{ results.deltaE.clinical_tooth_vs_shade }}</b></li>
+          <li>Lab Tooth ↔ Shade: <b>{{ results.deltaE.lab_tooth_vs_shade }}</b></li>
+          <li>Shade mismatch across photos: <b>{{ results.deltaE.shade_between_images }}</b></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h4>Scores</h4>
+        <ul>
+          <li>Color score: <b>{{ results.scores.color_score }}</b></li>
+          <li>Shape score: <b>{{ results.scores.shape_score }}</b></li>
+          <li>Sharpness score: <b>{{ results.scores.sharpness_score }}</b></li>
+          <li>Glare penalty: <b>{{ results.scores.glare_penalty }}</b></li>
+          <li>Lighting penalty: <b>{{ results.scores.lighting_mismatch_penalty }}</b></li>
+          <li>Quality: <b>{{ results.scores.quality }}</b></li>
+          <li>Success: <b>{{ results.scores.success }}</b> → <span class="pill {{ results.scores.success_bucket|lower }}">{{ results.scores.success_bucket }}</span></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h4>Debug</h4>
+        <ul>
+          <li>Sharpness (var): clinical={{ results.debug.sharpness_raw.clinical }}, lab={{ results.debug.sharpness_raw.lab }}</li>
+          <li>Hu distance: {{ results.debug.shape_hu_distance }}</li>
+          <li>Glare ratio: clinical={{ results.debug.glare_ratio.clinical }}, lab={{ results.debug.glare_ratio.lab }}</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="foot-note">
+      <b>Tip:</b> Keep the same shade tab in both images. ΔE ≤ 2–3 ≈ acceptable match.
+    </div>
+    {% endif %}
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
