@@ -8,7 +8,7 @@
 
 **No dataset required.** Built with classical computer vision and color science. As no dataset were found opensource.
 
-## **Demo Video**: [[Watch the demo](https://raw.githubusercontent.com/your-username/your-repo/main/assets/demo.mp4)](https://drive.google.com/file/d/1JLT7zZJuUgj06Da9fba2JCgIc4nbSsJA/view?usp=sharing)
+## **Demo Video**: https://drive.google.com/file/d/1JLT7zZJuUgj06Da9fba2JCgIc4nbSsJA/view?usp=sharing
 
 **Demo Note**: The demo video shows poor results because the selected photos are not a match. I intended to test with additional case photos, but I did not have enough matching pairs to demonstrate a successful case.
 
@@ -181,3 +181,4 @@ success = sigmoid(3*(quality - 0.6))
 - Color science: CIELAB / ΔE00
 - Libraries: OpenCV, scikit-image
 - Design: Inspired by dark clinical theme**
+
